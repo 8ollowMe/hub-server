@@ -1,1 +1,5 @@
 .idea
+
+.gradle/**
+.DS_Store
+gradle.properties
