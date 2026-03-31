@@ -1,6 +1,7 @@
 package followMe.hub_server.hub.domain.entity;
 
 import com.followMe.common.entity.BaseAudit;
+import followMe.hub_server.hub.exception.detail.*;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -83,7 +84,7 @@ public class Hub extends BaseAudit {
 
 	private void validate(String hubName, String address, BigDecimal latitude, BigDecimal longitude) {
 		if (isDeleted()) {
-			throw new IllegalStateException("삭제된 허브는 수정할 수 없습니다.");
+			throw new HubAlreadyDeletedException();
 		}
 
 		validateHubName(hubName);
@@ -94,59 +95,59 @@ public class Hub extends BaseAudit {
 
 	private void validateHubName(String hubName) {
 		if (hubName == null || hubName.isBlank()) {
-			throw new IllegalArgumentException("허브명은 필수입니다.");
+			throw new InvalidHubNameException();
 		}
 
 		String normalizedHubName = hubName.trim();
 
 		if (normalizedHubName.length() > HUB_NAME_MAX_LENGTH) {
-			throw new IllegalArgumentException("허브명은 " + HUB_NAME_MAX_LENGTH + "자를 초과할 수 없습니다.");
+			throw new InvalidHubNameException("허브명은 " + HUB_NAME_MAX_LENGTH + "자를 초과할 수 없습니다.");
 		}
 	}
 
 	private void validateAddress(String address) {
 		if (address == null || address.isBlank()) {
-			throw new IllegalArgumentException("주소는 필수입니다.");
+			throw new InvalidAddressException();
 		}
 
 		String normalizedAddress = address.trim();
 
 		if (normalizedAddress.length() > ADDRESS_MAX_LENGTH) {
-			throw new IllegalArgumentException("주소는 " + ADDRESS_MAX_LENGTH + "자를 초과할 수 없습니다.");
+			throw new InvalidAddressException("주소는 " + ADDRESS_MAX_LENGTH + "자를 초과할 수 없습니다.");
 		}
 	}
 
 	private void validateLatitude(BigDecimal latitude) {
 		if (latitude == null) {
-			throw new IllegalArgumentException("위도는 필수입니다.");
+			throw new InvalidLatitudeException();
 		}
 
 		if (latitude.compareTo(MIN_LATITUDE) < 0 || latitude.compareTo(MAX_LATITUDE) > 0) {
-			throw new IllegalArgumentException("위도는 " + MIN_LATITUDE + " 이상 " + MAX_LATITUDE + " 이하여야 합니다.");
+			throw new InvalidLatitudeException("위도는 " + MIN_LATITUDE + " 이상 " + MAX_LATITUDE + " 이하여야 합니다.");
 		}
 	}
 
 	private void validateLongitude(BigDecimal longitude) {
 		if (longitude == null) {
-			throw new IllegalArgumentException("경도는 필수입니다.");
+			throw new InvalidLongitudeException();
 		}
 
 		if (longitude.compareTo(MIN_LONGITUDE) < 0 || longitude.compareTo(MAX_LONGITUDE) > 0) {
-			throw new IllegalArgumentException("경도는 " + MIN_LONGITUDE + " 이상 " + MAX_LONGITUDE + " 이하여야 합니다.");
+			throw new InvalidLongitudeException("경도는 " + MIN_LONGITUDE + " 이상 " + MAX_LONGITUDE + " 이하여야 합니다.");
 		}
 	}
 
 	private void validateDeletedBy(String deletedBy) {
 		if (isDeleted()) {
-			throw new IllegalStateException("이미 삭제된 허브입니다.");
+			throw new HubAlreadyDeletedException();
 		}
 
 		if (deletedBy == null || deletedBy.isBlank()) {
-			throw new IllegalArgumentException("삭제자는 필수입니다.");
+			throw new InvalidDeletedByException("삭제자는 필수입니다.");
 		}
 
 		if (deletedBy.trim().length() > DELETED_BY_MAX_LENGTH) {
-			throw new IllegalArgumentException("삭제자 정보는 " + DELETED_BY_MAX_LENGTH + "자를 초과할 수 없습니다.");
+			throw new InvalidDeletedByException("삭제자 정보는 " + DELETED_BY_MAX_LENGTH + "자를 초과할 수 없습니다.");
 		}
 	}
 

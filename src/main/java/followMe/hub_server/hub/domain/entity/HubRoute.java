@@ -1,5 +1,6 @@
 package followMe.hub_server.hub.domain.entity;
 
+import followMe.hub_server.hub.exception.detail.*;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -80,39 +81,39 @@ public class HubRoute {
 
     private void validateOriginHub(Hub originHub) {
         if (originHub == null) {
-            throw new IllegalArgumentException("출발 허브는 필수입니다.");
+            throw new OriginHubRequiredException();
         }
     }
 
     private void validateDestinationHub(Hub destinationHub) {
         if (destinationHub == null) {
-            throw new IllegalArgumentException("도착 허브는 필수입니다.");
+            throw new DestinationHubRequiredException();
         }
     }
 
     private void validateSameHub(Hub originHub, Hub destinationHub) {
         if (originHub.getHubId().equals(destinationHub.getHubId())) {
-            throw new IllegalArgumentException("출발 허브와 도착 허브는 같을 수 없습니다.");
+            throw new SameOriginDestinationException();
         }
     }
 
     private void validateDuration(BigDecimal duration) {
         if (duration == null) {
-            throw new IllegalArgumentException("소요 시간은 필수입니다.");
+            throw new InvalidDurationException();
         }
 
         if (duration.compareTo(MIN_DURATION) <= 0) {
-            throw new IllegalArgumentException("소요 시간은 0보다 커야 합니다.");
+            throw new InvalidDurationException("소요 시간은 0보다 커야 합니다.");
         }
     }
 
     private void validateDistance(BigDecimal distance) {
         if (distance == null) {
-            throw new IllegalArgumentException("이동 거리는 필수입니다.");
+            throw new InvalidDistanceException();
         }
 
         if (distance.compareTo(MIN_DISTANCE) <= 0) {
-            throw new IllegalArgumentException("이동 거리는 0보다 커야 합니다.");
+            throw new InvalidDistanceException("이동 거리는 0보다 커야 합니다.");
         }
     }
 }
