@@ -55,14 +55,11 @@ public class HubController {
 
   @GetMapping
   public ResponseEntity<ApiResponse> searchHubs(
-          @RequestParam(defaultValue = "0") int page,
-          @RequestParam(defaultValue = "10") int size,
-          @ModelAttribute GetHubsCondition condition) {
-      PageRequest pageRequest = PageRequest.of(page, size);
-    GetHubsQuery query = new GetHubsQuery(
-            condition.keyword(),
-            pageRequest
-    );
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "10") int size,
+      @ModelAttribute GetHubsCondition condition) {
+    PageRequest pageRequest = PageRequest.of(page, size);
+    GetHubsQuery query = new GetHubsQuery(condition.keyword(), pageRequest);
     GetHubsPageResult result = hubService.searchHubs(query);
     return ApiResponse.ok(HubPageResDto.from(result));
   }

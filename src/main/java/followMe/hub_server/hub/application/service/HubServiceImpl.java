@@ -50,7 +50,8 @@ public class HubServiceImpl implements HubService {
   @Override
   public GetHubsPageResult searchHubs(GetHubsQuery query) {
 
-    Page<Hub> page = hubRepository.searchByKeyword(query.keyword(), query.pageRequest().toPageable());
+    Page<Hub> page =
+        hubRepository.searchByKeyword(query.keyword(), query.pageRequest().toPageable());
 
     return GetHubsPageResult.from(page);
   }

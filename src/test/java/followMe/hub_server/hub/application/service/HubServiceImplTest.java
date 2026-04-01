@@ -137,40 +137,39 @@ class HubServiceImplTest {
     }
   }
 
-    @Nested
-    @DisplayName("허브 검색")
-    class SearchHubsTest {
+  @Nested
+  @DisplayName("허브 검색")
+  class SearchHubsTest {
 
-        @Test
-        @DisplayName("키워드로 허브 목록을 조회할 수 있다")
-        void searchHubs_success() {
-            // given
-            GetHubsQuery query =
-                    new GetHubsQuery("서울", PageRequest.of(0, 10));
+    @Test
+    @DisplayName("키워드로 허브 목록을 조회할 수 있다")
+    void searchHubs_success() {
+      // given
+      GetHubsQuery query = new GetHubsQuery("서울", PageRequest.of(0, 10));
 
-            Hub hub =
-                    Hub.builder()
-                            .hubName("서울 허브")
-                            .address("서울특별시 강남구")
-                            .latitude(new BigDecimal("37.4979"))
-                            .longitude(new BigDecimal("127.0276"))
-                            .build();
+      Hub hub =
+          Hub.builder()
+              .hubName("서울 허브")
+              .address("서울특별시 강남구")
+              .latitude(new BigDecimal("37.4979"))
+              .longitude(new BigDecimal("127.0276"))
+              .build();
 
-            Page<Hub> page =
-                    new PageImpl<>(List.of(hub), org.springframework.data.domain.PageRequest.of(0, 10), 1);
+      Page<Hub> page =
+          new PageImpl<>(List.of(hub), org.springframework.data.domain.PageRequest.of(0, 10), 1);
 
-            when(hubRepository.searchByKeyword(anyString(), any(org.springframework.data.domain.Pageable.class)))
-                    .thenReturn(page);
+      when(hubRepository.searchByKeyword(
+              anyString(), any(org.springframework.data.domain.Pageable.class)))
+          .thenReturn(page);
 
-            // when
-            GetHubsPageResult result = hubService.searchHubs(query);
+      // when
+      GetHubsPageResult result = hubService.searchHubs(query);
 
-            // then
-            assertAll(
-                    () -> assertThat(result).isNotNull(),
-                    () -> assertThat(result.content()).hasSize(1));
-        }
+      // then
+      assertAll(
+          () -> assertThat(result).isNotNull(), () -> assertThat(result.content()).hasSize(1));
     }
+  }
 
   @Nested
   @DisplayName("허브 수정")
