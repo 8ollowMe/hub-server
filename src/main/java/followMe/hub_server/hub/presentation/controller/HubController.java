@@ -1,5 +1,6 @@
 package followMe.hub_server.hub.presentation.controller;
 
+import com.followMe.common.pagination.PageRequest;
 import com.followMe.common.response.ApiResponse;
 import followMe.hub_server.hub.application.dto.command.CreateHubCommand;
 import followMe.hub_server.hub.application.dto.command.GetHubsQuery;
@@ -9,6 +10,7 @@ import followMe.hub_server.hub.application.dto.result.HubResult;
 import followMe.hub_server.hub.application.service.HubService;
 import followMe.hub_server.hub.application.service.UserContext;
 import followMe.hub_server.hub.application.service.UserRole;
+import followMe.hub_server.hub.presentation.dto.request.GetHubsCondition;
 import followMe.hub_server.hub.presentation.dto.request.PostHubReqDto;
 import followMe.hub_server.hub.presentation.dto.request.UpdateHubReqDto;
 import followMe.hub_server.hub.presentation.dto.response.HubPageResDto;
@@ -53,10 +55,14 @@ public class HubController {
 
   @GetMapping
   public ResponseEntity<ApiResponse> searchHubs(
-      @RequestParam(required = false) String keyword,
-      @RequestParam(defaultValue = "0") int page,
-      @RequestParam(defaultValue = "10") int size) {
-    GetHubsQuery query = new GetHubsQuery(keyword, page, size);
+          @RequestParam(defaultValue = "0") int page,
+          @RequestParam(defaultValue = "10") int size,
+          @ModelAttribute GetHubsCondition condition) {
+      PageRequest pageRequest = PageRequest.of(page, size);
+    GetHubsQuery query = new GetHubsQuery(
+            condition.keyword(),
+            pageRequest
+    );
     GetHubsPageResult result = hubService.searchHubs(query);
     return ApiResponse.ok(HubPageResDto.from(result));
   }

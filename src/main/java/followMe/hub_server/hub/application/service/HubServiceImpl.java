@@ -13,7 +13,6 @@ import followMe.hub_server.hub.exception.detail.InvalidAuthException;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,9 +49,8 @@ public class HubServiceImpl implements HubService {
 
   @Override
   public GetHubsPageResult searchHubs(GetHubsQuery query) {
-    PageRequest pageRequest = PageRequest.of(query.page(), query.size());
 
-    Page<Hub> page = hubRepository.searchByKeyword(query.keyword(), pageRequest);
+    Page<Hub> page = hubRepository.searchByKeyword(query.keyword(), query.pageRequest().toPageable());
 
     return GetHubsPageResult.from(page);
   }
