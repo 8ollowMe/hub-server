@@ -4,7 +4,6 @@ import com.followMe.common.entity.BaseAudit;
 import followMe.hub_server.hub.exception.detail.*;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -45,12 +44,6 @@ public class Hub extends BaseAudit {
   @Column(name = "longitude", nullable = false, precision = 10, scale = 7)
   private BigDecimal longitude;
 
-  @Column(name = "deleted_at")
-  private LocalDateTime deletedAt;
-
-  @Column(name = "deleted_by", length = DELETED_BY_MAX_LENGTH)
-  private String deletedBy;
-
   @Builder
   public Hub(String hubName, String address, BigDecimal latitude, BigDecimal longitude) {
     validate(hubName, address, latitude, longitude);
@@ -68,17 +61,6 @@ public class Hub extends BaseAudit {
     this.address = normalize(address);
     this.latitude = latitude;
     this.longitude = longitude;
-  }
-
-  public void softDelete(String deletedBy) {
-    validateDeletedBy(deletedBy);
-
-    this.deletedAt = LocalDateTime.now();
-    this.deletedBy = deletedBy.trim();
-  }
-
-  public boolean isDeleted() {
-    return this.deletedAt != null;
   }
 
   private void validate(String hubName, String address, BigDecimal latitude, BigDecimal longitude) {

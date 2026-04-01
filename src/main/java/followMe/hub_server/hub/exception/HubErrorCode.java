@@ -22,7 +22,8 @@ public enum HubErrorCode implements ErrorCode {
   HUB_ROUTE_ALREADY_INACTIVE(HttpStatus.BAD_REQUEST, "HUB_012", "이미 비활성화된 허브 경로입니다."),
   INVALID_DELETED_BY(HttpStatus.BAD_REQUEST, "HUB_013", "삭제자 정보가 올바르지 않습니다."),
   ORIGIN_HUB_REQUIRED(HttpStatus.BAD_REQUEST, "HUB_014", "출발 허브는 필수입니다."),
-  DESTINATION_HUB_REQUIRED(HttpStatus.BAD_REQUEST, "HUB_015", "도착 허브는 필수입니다.");
+  DESTINATION_HUB_REQUIRED(HttpStatus.BAD_REQUEST, "HUB_015", "도착 허브는 필수입니다."),
+  INVALID_AUTH(HttpStatus.UNAUTHORIZED, "HUB_016", "권한이 없습니다.");
 
   private final HttpStatus httpStatus;
   private final String code;

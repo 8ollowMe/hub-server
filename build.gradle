@@ -51,7 +51,7 @@ dependencies {
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-    implementation "com.followMe:common-lib:1.0.0"
+    implementation "com.followMe:common-lib:1.0.2"
 }
 
 dependencyManagement {
