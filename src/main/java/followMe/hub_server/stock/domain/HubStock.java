@@ -42,7 +42,7 @@ public class HubStock extends BaseAudit {
 
   @Embedded private Vendor vendor;
 
-  @Column(name = "hubId", nullable = false)
+  @Column(name = "hub_id", nullable = false)
   private UUID hubId;
 
   @Column(nullable = false)

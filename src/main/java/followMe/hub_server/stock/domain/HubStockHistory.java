@@ -19,28 +19,29 @@ import org.hibernate.annotations.SQLRestriction;
 public class HubStockHistory extends BaseAudit {
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
-  @Column(nullable = false)
+  @Column(name = "history_id", nullable = false)
   private UUID historyId;
 
-  @Column(nullable = false)
+  @Column(name = "product_id", nullable = false)
   private UUID productId;
 
   @Embedded private ProductInfo productInfo;
 
   @Embedded private Vendor vendor;
 
-  @Column(nullable = false)
+  @Column(name = "hub_id", nullable = false)
   private UUID hubId;
 
   @Column(nullable = false)
   private Type type;
 
+  @Column(name = "ref_id")
   private UUID refId;
 
-  @Column(nullable = false)
+  @Column(name = "before_quantity", nullable = false)
   private Integer beforeQuantity;
 
-  @Column(nullable = false)
+  @Column(name = "after_quantity", nullable = false)
   private Integer afterQuantity;
 
   @Builder(access = AccessLevel.PRIVATE)

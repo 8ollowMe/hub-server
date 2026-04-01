@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class ProductInfo {
-  @Column(name = "product_Code", length = 50, nullable = false)
+  @Column(name = "product_code", length = 50, nullable = false)
   private String productCode;
 
   @Column(name = "product_name", nullable = false)
