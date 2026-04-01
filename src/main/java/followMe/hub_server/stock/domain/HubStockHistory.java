@@ -63,7 +63,7 @@ public class HubStockHistory extends BaseAudit {
     this.afterQuantity = afterQuantity;
   }
 
-  public static HubStockHistory recode(
+  public static HubStockHistory record(
       HubStock hubStock, Type type, UUID refId, Integer beforeQuantity, Integer afterQuantity) {
     return HubStockHistory.builder()
         .productId(hubStock.getProductId())
