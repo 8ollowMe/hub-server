@@ -120,13 +120,13 @@ public class HubStock extends BaseAudit {
    * 2. orderId 유효성 검증
    */
   public void orderDecreaseQuantity(
-      UUID requesterId, UUID orderId, OrderValidateChecker orderValidateChecker) {
+      UUID requesterId, UUID orderId, Integer amount, OrderValidateChecker orderValidateChecker) {
 
-    checkValidateDecrease(quantity, Type.OUTBOUND);
+    checkValidateDecrease(amount, Type.OUTBOUND);
     checkValidateOrder(requesterId, orderId, orderValidateChecker);
 
     Integer before = this.quantity;
-    this.quantity -= quantity;
+    this.quantity -= amount;
     Events.publish(StockOrderEvent.of(this, orderId, before, this.quantity));
   }
 
