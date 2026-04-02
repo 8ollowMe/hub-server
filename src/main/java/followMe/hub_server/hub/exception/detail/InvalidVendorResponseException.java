@@ -5,7 +5,7 @@ import followMe.hub_server.hub.exception.HubException;
 
 public class InvalidVendorResponseException extends HubException {
 
-    public InvalidVendorResponseException() {
-        super(HubErrorCode.INVALID_VENDOR_RESPONSE);
-    }
+  public InvalidVendorResponseException() {
+    super(HubErrorCode.INVALID_VENDOR_RESPONSE);
+  }
 }

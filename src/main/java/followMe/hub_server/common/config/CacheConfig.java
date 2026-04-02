@@ -15,28 +15,21 @@ import org.springframework.data.redis.serializer.RedisSerializationContext;
 @EnableCaching
 public class CacheConfig {
 
-    @Bean
-    public CacheManager cacheManager(RedisConnectionFactory connectionFactory) {
-        GenericJackson2JsonRedisSerializer serializer =
-                new GenericJackson2JsonRedisSerializer();
+  @Bean
+  public CacheManager cacheManager(RedisConnectionFactory connectionFactory) {
+    GenericJackson2JsonRedisSerializer serializer = new GenericJackson2JsonRedisSerializer();
 
-        RedisCacheConfiguration defaultConfig = RedisCacheConfiguration.defaultCacheConfig()
-                .disableCachingNullValues()
-                .entryTtl(Duration.ofMinutes(30))
-                .serializeValuesWith(
-                        RedisSerializationContext.SerializationPair.fromSerializer(serializer)
-                );
+    RedisCacheConfiguration defaultConfig =
+        RedisCacheConfiguration.defaultCacheConfig()
+            .disableCachingNullValues()
+            .entryTtl(Duration.ofMinutes(30))
+            .serializeValuesWith(
+                RedisSerializationContext.SerializationPair.fromSerializer(serializer));
 
-        return RedisCacheManager.builder(connectionFactory)
-                .cacheDefaults(defaultConfig)
-                .withCacheConfiguration(
-                        "hubRoutePath",
-                        defaultConfig.entryTtl(Duration.ofHours(1))
-                )
-                .withCacheConfiguration(
-                        "vendorInfo",
-                        defaultConfig.entryTtl(Duration.ofMinutes(10))
-                )
-                .build();
-    }
+    return RedisCacheManager.builder(connectionFactory)
+        .cacheDefaults(defaultConfig)
+        .withCacheConfiguration("hubRoutePath", defaultConfig.entryTtl(Duration.ofHours(1)))
+        .withCacheConfiguration("vendorInfo", defaultConfig.entryTtl(Duration.ofMinutes(10)))
+        .build();
+  }
 }

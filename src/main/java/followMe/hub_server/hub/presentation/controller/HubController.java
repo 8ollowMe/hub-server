@@ -35,8 +35,7 @@ public class HubController {
       @RequestHeader("X-User-Role") UserRole role,
       @RequestHeader(value = "X-Hub-Id", required = false) UUID hubId,
       @RequestHeader(value = "X-Vendor-Id", required = false) UUID vendorId,
-      @RequestHeader(value = "X-User-Name", required = false) String userName
-      ) {
+      @RequestHeader(value = "X-User-Name", required = false) String userName) {
     return new UserContext(userId, role, hubId, vendorId, userName);
   }
 

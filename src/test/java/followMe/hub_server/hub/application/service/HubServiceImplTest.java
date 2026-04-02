@@ -266,7 +266,8 @@ class HubServiceImplTest {
       UUID userId = UUID.randomUUID();
       UUID hubId = UUID.randomUUID();
 
-      UserContext userContext = new UserContext(userId, UserRole.DELIVERY_MANAGER, null, null, null);
+      UserContext userContext =
+          new UserContext(userId, UserRole.DELIVERY_MANAGER, null, null, null);
       UpdateHubCommand command =
           new UpdateHubCommand(
               hubId, "수정된 허브", "수정된 주소", new BigDecimal("35.1234"), new BigDecimal("128.1234"));
@@ -351,7 +352,8 @@ class HubServiceImplTest {
       UUID userId = UUID.randomUUID();
       UUID hubId = UUID.randomUUID();
 
-      UserContext userContext = new UserContext(userId, UserRole.DELIVERY_MANAGER, null, null, null);
+      UserContext userContext =
+          new UserContext(userId, UserRole.DELIVERY_MANAGER, null, null, null);
 
       // when & then
       assertThatThrownBy(() -> hubService.deleteHub(userContext, hubId))

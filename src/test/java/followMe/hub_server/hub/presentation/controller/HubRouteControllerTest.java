@@ -25,71 +25,64 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(
-        controllers = HubRouteController.class,
-        excludeFilters = {
-                @ComponentScan.Filter(
-                        type = FilterType.ASSIGNABLE_TYPE,
-                        classes = JpaAuditConfig.class
-                )
-        }
-)
+    controllers = HubRouteController.class,
+    excludeFilters = {
+      @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = JpaAuditConfig.class)
+    })
 @AutoConfigureMockMvc(addFilters = false)
 @TestPropertySource(
-        properties = {
-                "spring.cloud.config.enabled=false",
-                "eureka.client.enabled=false",
-                "spring.cloud.discovery.enabled=false",
-                "spring.config.import=",
-                "spring.autoconfigure.exclude="
-                        + "org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration,"
-                        + "org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration"
-        }
-)
+    properties = {
+      "spring.cloud.config.enabled=false",
+      "eureka.client.enabled=false",
+      "spring.cloud.discovery.enabled=false",
+      "spring.config.import=",
+      "spring.autoconfigure.exclude="
+          + "org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration,"
+          + "org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration"
+    })
 @DisplayName("HubRouteController 단위 테스트")
 class HubRouteControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+  @Autowired private MockMvc mockMvc;
 
-    @MockitoBean
-    private HubRouteService hubRouteService;
+  @MockitoBean private HubRouteService hubRouteService;
 
-    @MockitoBean
-    private JpaMetamodelMappingContext jpaMappingContext;
+  @MockitoBean private JpaMetamodelMappingContext jpaMappingContext;
 
-    @Test
-    @DisplayName("경로 조회 요청 시 nodes를 반환한다")
-    void getRoute_success() throws Exception {
-        UUID sourceHubId = UUID.fromString("11111111-1111-1111-1111-111111111111");
-        UUID vendorId = UUID.fromString("aaaaaaaa-1111-2222-3333-bbbbbbbbbbbb");
+  @Test
+  @DisplayName("경로 조회 요청 시 nodes를 반환한다")
+  void getRoute_success() throws Exception {
+    UUID sourceHubId = UUID.fromString("11111111-1111-1111-1111-111111111111");
+    UUID vendorId = UUID.fromString("aaaaaaaa-1111-2222-3333-bbbbbbbbbbbb");
 
-        HubRouteResult result = new HubRouteResult(List.of(
+    HubRouteResult result =
+        new HubRouteResult(
+            List.of(
                 new RouteNodeResult(sourceHubId, NodeType.HUB, "서울특별시 센터", 1),
                 new RouteNodeResult(
-                        UUID.fromString("88888888-8888-8888-8888-888888888888"),
-                        NodeType.HUB,
-                        "대전광역시 센터",
-                        2
-                ),
+                    UUID.fromString("88888888-8888-8888-8888-888888888888"),
+                    NodeType.HUB,
+                    "대전광역시 센터",
+                    2),
                 new RouteNodeResult(
-                        UUID.fromString("55555555-5555-5555-5555-555555555555"),
-                        NodeType.HUB,
-                        "대구광역시 센터",
-                        3
-                ),
-                new RouteNodeResult(vendorId, NodeType.VENDOR, "대구업체", 4)
-        ));
+                    UUID.fromString("55555555-5555-5555-5555-555555555555"),
+                    NodeType.HUB,
+                    "대구광역시 센터",
+                    3),
+                new RouteNodeResult(vendorId, NodeType.VENDOR, "대구업체", 4)));
 
-        when(hubRouteService.getRoute(sourceHubId, vendorId)).thenReturn(result);
+    when(hubRouteService.getRoute(sourceHubId, vendorId)).thenReturn(result);
 
-        mockMvc.perform(get("/api/hubs/route")
-                        .param("sourceHubId", sourceHubId.toString())
-                        .param("vendorId", vendorId.toString()))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.nodes[0].type").value("HUB"))
-                .andExpect(jsonPath("$.nodes[0].name").value("서울특별시 센터"))
-                .andExpect(jsonPath("$.nodes[3].type").value("VENDOR"))
-                .andExpect(jsonPath("$.nodes[3].name").value("대구업체"))
-                .andExpect(jsonPath("$.nodes[3].sequence").value(4));
-    }
+    mockMvc
+        .perform(
+            get("/api/hubs/route")
+                .param("sourceHubId", sourceHubId.toString())
+                .param("vendorId", vendorId.toString()))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.nodes[0].type").value("HUB"))
+        .andExpect(jsonPath("$.nodes[0].name").value("서울특별시 센터"))
+        .andExpect(jsonPath("$.nodes[3].type").value("VENDOR"))
+        .andExpect(jsonPath("$.nodes[3].name").value("대구업체"))
+        .andExpect(jsonPath("$.nodes[3].sequence").value(4));
+  }
 }
