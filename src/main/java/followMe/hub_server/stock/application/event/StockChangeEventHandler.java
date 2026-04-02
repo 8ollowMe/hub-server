@@ -1,9 +1,11 @@
 package followMe.hub_server.stock.application.event;
 
+import followMe.hub_server.common.audit.AuditorContext;
 import followMe.hub_server.stock.domain.HubStockHistory;
 import followMe.hub_server.stock.domain.HubStockHistoryRepository;
 import followMe.hub_server.stock.domain.event.StockChangedEvent;
 import followMe.hub_server.stock.domain.event.StockOrderEvent;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -24,6 +26,9 @@ public class StockChangeEventHandler {
   @Transactional(propagation = Propagation.REQUIRES_NEW)
   @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
   public void handleStockChangedEvent(StockChangedEvent event) {
+
+    AuditorContext.setCurrentUserId(UUID.randomUUID());
+
     historyRepository.save(
         HubStockHistory.record(
             event.getHubStock(),
@@ -38,6 +43,9 @@ public class StockChangeEventHandler {
   @Transactional(propagation = Propagation.REQUIRES_NEW)
   @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
   public void handleOrderStockChangedEvent(StockOrderEvent event) {
+
+    AuditorContext.setCurrentUserId(UUID.randomUUID());
+
     historyRepository.save(
         HubStockHistory.record(
             event.getHubStock(),

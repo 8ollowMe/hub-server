@@ -17,7 +17,7 @@ import org.springframework.security.task.DelegatingSecurityContextAsyncTaskExecu
 @EnableAsync
 @RequiredArgsConstructor
 public class EventConfig implements AsyncConfigurer {
-  private ApplicationContext ctx;
+  private final ApplicationContext ctx;
 
   @Bean
   public InitializingBean eventsInitializer() {

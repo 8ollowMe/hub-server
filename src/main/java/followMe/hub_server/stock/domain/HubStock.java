@@ -21,20 +21,20 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLRestriction;
+import org.springframework.data.domain.Persistable;
 
 @Getter
 @Entity
 @Table(name = "p_hub_stock")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLRestriction("deleted_at IS NULL")
-public class HubStock extends BaseAudit {
+public class HubStock extends BaseAudit implements Persistable<UUID> {
   private static final Set<Type> DECREASE_TYPES = Set.of(Type.ADJUST_LOSS, Type.OUTBOUND);
   private static final Set<Type> INCREASE_TYPES =
       Set.of(Type.INBOUND, Type.RETURN_IN, Type.ORDER_CANCELED);
   private static final Set<Type> DELETED_TYPES = Set.of(Type.DISCONTINUED);
 
   @Id
-  @GeneratedValue(strategy = GenerationType.UUID)
   @Column(name = "product_id", nullable = false)
   private UUID productId;
 
@@ -49,6 +49,16 @@ public class HubStock extends BaseAudit {
   Integer quantity;
 
   @Version Long version;
+
+  @Override
+  public UUID getId() {
+    return this.productId;
+  }
+
+  @Override
+  public boolean isNew() {
+    return this.getCreatedAt() == null;
+  }
 
   @Builder(access = AccessLevel.PRIVATE)
   private HubStock(
