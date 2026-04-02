@@ -117,17 +117,25 @@ public class HubStock extends BaseAudit {
   /*
    * 주문 재고 감소 시 검증
    * 1. 재고 감소 타입(유형) 검증 & 남은 재고 검증 (현재 재고 > 감소 요청)
-   * 2. orderId 유효성 검증
+   * 2. TODO: (제외)orderId 유효성 검증, 필요하다면 application 영역에서 수행.
+   *     도메인에서 치리시 N건의 요청에 N건 통신 발생
    */
-  public void orderDecreaseQuantity(
-      UUID requesterId, UUID orderId, Integer amount, OrderValidateChecker orderValidateChecker) {
+  public void orderDecreaseQuantity(UUID orderId, Integer amount) {
 
     checkValidateDecrease(amount, Type.OUTBOUND);
-    checkValidateOrder(requesterId, orderId, orderValidateChecker);
 
     Integer before = this.quantity;
     this.quantity -= amount;
     Events.publish(StockOrderEvent.of(this, orderId, before, this.quantity));
+  }
+
+  public void orderCancelQuantity(UUID orderId, Integer amount) {
+
+    checkValidateIncrease(amount, Type.ORDER_CANCELED);
+
+    Integer before = this.quantity;
+    this.quantity += amount;
+    Events.publish(StockOrderEvent.cancelOf(this, orderId, before, this.quantity));
   }
 
   /*
@@ -158,6 +166,20 @@ public class HubStock extends BaseAudit {
 
     this.softDelete();
     Events.publish(StockChangedEvent.deleteOf(this));
+  }
+
+  public static boolean isDecreaseType(Type type) {
+    if (Objects.isNull(type)) {
+      throw new InvalidStockTypeException(StockErrorCode.STOCK_TYPE_NULL);
+    }
+    return DECREASE_TYPES.contains(type);
+  }
+
+  public static boolean isIncreaseType(Type type) {
+    if (Objects.isNull(type)) {
+      throw new InvalidStockTypeException(StockErrorCode.STOCK_TYPE_NULL);
+    }
+    return INCREASE_TYPES.contains(type);
   }
 
   private static void checkValidateCreateQuantity(Integer quantity) {
