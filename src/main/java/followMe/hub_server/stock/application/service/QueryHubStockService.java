@@ -5,7 +5,6 @@ import followMe.hub_server.stock.application.dto.SearchProductIdsRequest;
 import followMe.hub_server.stock.application.dto.SearchResponse;
 import followMe.hub_server.stock.domain.HubStock;
 import followMe.hub_server.stock.domain.HubStockRepository;
-import followMe.hub_server.stock.domain.exception.detail.InvalidSearchCondition;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -27,13 +26,6 @@ public class QueryHubStockService {
   // TODO: Query DSL 도입 시 수정
   public Page<SearchResponse> searchHubStock(SearchCondition condition, Pageable pageable) {
 
-    if (Objects.isNull(condition)) {
-      return SearchResponse.from(hubStockRepository.findAll(pageable));
-    }
-    if (Objects.nonNull(condition.getProductId())) {
-      return SearchResponse.from(
-          hubStockRepository.findAllByProductId(condition.getProductId(), pageable));
-    }
     if (Objects.nonNull(condition.getHubId())) {
       return SearchResponse.from(hubStockRepository.findAllByHubId(condition.getHubId(), pageable));
     }
@@ -42,7 +34,8 @@ public class QueryHubStockService {
           hubStockRepository.findAllByVendor_Id(condition.getVendorId(), pageable));
     }
 
-    throw new InvalidSearchCondition();
+    return SearchResponse.from(
+        hubStockRepository.findAllByProductId(condition.getProductId(), pageable));
   }
 
   public Page<SearchResponse> searchHubStock(SearchProductIdsRequest request, Pageable pageable) {

@@ -33,6 +33,7 @@ public class HubStockHistory extends BaseAudit {
   private UUID hubId;
 
   @Column(nullable = false)
+  @Enumerated(EnumType.STRING)
   private Type type;
 
   @Column(name = "ref_id")
