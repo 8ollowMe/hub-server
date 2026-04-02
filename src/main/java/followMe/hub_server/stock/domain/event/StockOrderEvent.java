@@ -29,4 +29,15 @@ public class StockOrderEvent {
         .afterQuantity(afterQuantity)
         .build();
   }
+
+  public static StockOrderEvent cancelOf(
+      HubStock hubStock, UUID orderId, Integer beforeQuantity, Integer afterQuantity) {
+    return StockOrderEvent.builder()
+        .hubStock(hubStock)
+        .type(Type.ORDER_CANCELED)
+        .orderId(orderId)
+        .beforeQuantity(beforeQuantity)
+        .afterQuantity(afterQuantity)
+        .build();
+  }
 }
