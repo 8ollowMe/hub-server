@@ -26,9 +26,16 @@ public enum StockErrorCode implements ErrorCode {
 
   ORDER_DUPLICATED_PRODUCT("STOCK_030", "중복된 상품에 대한 재고 수정 요청이 존재합니다.", HttpStatus.BAD_REQUEST),
 
+  VENDOR_CLIENT_UNAVAILABLE("STOCK_050", "업체 서비스 통신에 문제가 생겼습니다.", HttpStatus.SERVICE_UNAVAILABLE),
+  VENDOR_CLIENT_CIRCUIT_BREAKER(
+      "STOCK_050", "업체 서비스 상태가 불안하여, 요청이 일시 차단 되었습니다.", HttpStatus.SERVICE_UNAVAILABLE),
+
   STOCK_REGISTER_FORBIDDEN("STOCK_100", "재고를 등록할 권한이 부족합니다.", HttpStatus.FORBIDDEN),
   STOCK_UPDATE_FORBIDDEN("STOCK_101", "재고를 수정할 권한이 부족합니다.", HttpStatus.FORBIDDEN),
   STOCK_DELETED_FORBIDDEN("STOCK_102", "재고를 삭제할 권한이 부족합니다.", HttpStatus.FORBIDDEN),
+
+  UNKNOWN_SERVER_CONNECT_FAIL(
+      "STOCK_110", "다른 서버와의 통신 중 알수없는 연결 오류 입니다.", HttpStatus.INTERNAL_SERVER_ERROR),
   ;
 
   private final String code;
