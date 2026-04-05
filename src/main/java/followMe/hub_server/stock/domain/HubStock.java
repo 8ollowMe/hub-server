@@ -1,6 +1,7 @@
 package followMe.hub_server.stock.domain;
 
 import com.followMe.common.entity.BaseAudit;
+import followMe.hub_server.stock.application.service.UserRole;
 import followMe.hub_server.stock.domain.event.StockChangedEvent;
 import followMe.hub_server.stock.domain.event.StockOrderEvent;
 import followMe.hub_server.stock.domain.exception.StockErrorCode;
@@ -162,6 +163,14 @@ public class HubStock extends BaseAudit implements Persistable<UUID> {
     Integer before = this.quantity;
     this.quantity += amount;
     Events.publish(StockChangedEvent.increaseOf(this, cause, before, this.quantity));
+  }
+
+  /*
+   * Vendor Server 에서 상품 정보 업데이트 시 처리 할 도메인 로직
+   * Stock History는 기록을 목적으로하기때문에, 변경 사항 미전파
+   */
+  public void updateStockInfo(String productCode, String productName) {
+    this.productInfo = ProductInfo.of(productCode, productName);
   }
 
   /*

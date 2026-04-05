@@ -1,4 +1,4 @@
-package followMe.hub_server.stock.application.event;
+package followMe.hub_server.stock.application.service;
 
 import followMe.hub_server.common.audit.AuditorContext;
 import followMe.hub_server.stock.domain.HubStockHistory;
@@ -18,7 +18,7 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class StockChangeEventHandler {
+public class StockHistoryEventHandler {
   private final HubStockHistoryRepository historyRepository;
 
   // TODO: retry 도입 시, 보상 행위 필요. 현재는 이력 저장 실패 시 무시
