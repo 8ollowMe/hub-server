@@ -1,10 +1,10 @@
-package followMe.hub_server.stock.application.service;
+package followMe.hub_server.stock.application.event;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.followMe.common.event.inbox.Inbox;
 import com.followMe.common.event.inbox.InboxRepository;
-import followMe.hub_server.stock.application.event.ProductUpdatedEvent;
 import followMe.hub_server.stock.application.event.ProductUpdatedEvent.Payload;
+import followMe.hub_server.stock.application.service.HubStockService;
 import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;

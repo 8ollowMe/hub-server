@@ -1,4 +1,4 @@
-package followMe.hub_server.stock.application.service;
+package followMe.hub_server.stock.application.event;
 
 import followMe.hub_server.common.audit.AuditorContext;
 import followMe.hub_server.stock.domain.HubStockHistory;
