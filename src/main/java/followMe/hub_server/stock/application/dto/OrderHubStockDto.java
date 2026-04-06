@@ -12,12 +12,14 @@ import lombok.Getter;
 public class OrderHubStockDto {
 
   @Getter
+  @Builder
   @AllArgsConstructor
   public static class OrderHubStockRequest {
     private UUID orderId;
     private List<Product> products;
 
     @Getter
+    @Builder
     @AllArgsConstructor
     public static class Product {
       private UUID id;

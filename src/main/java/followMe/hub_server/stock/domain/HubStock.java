@@ -1,6 +1,7 @@
 package followMe.hub_server.stock.domain;
 
 import com.followMe.common.entity.BaseAudit;
+import followMe.hub_server.stock.application.service.UserRole;
 import followMe.hub_server.stock.domain.event.StockChangedEvent;
 import followMe.hub_server.stock.domain.event.StockOrderEvent;
 import followMe.hub_server.stock.domain.exception.StockErrorCode;
@@ -21,20 +22,21 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLRestriction;
+import org.springframework.data.domain.Persistable;
 
 @Getter
 @Entity
 @Table(name = "p_hub_stock")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLRestriction("deleted_at IS NULL")
-public class HubStock extends BaseAudit {
+public class HubStock extends BaseAudit implements Persistable<UUID> {
   private static final Set<Type> DECREASE_TYPES = Set.of(Type.ADJUST_LOSS, Type.OUTBOUND);
   private static final Set<Type> INCREASE_TYPES =
       Set.of(Type.INBOUND, Type.RETURN_IN, Type.ORDER_CANCELED);
   private static final Set<Type> DELETED_TYPES = Set.of(Type.DISCONTINUED);
+  private static final Set<UserRole> PERMISSION_ROLE = Set.of(UserRole.HUB, UserRole.MASTER);
 
   @Id
-  @GeneratedValue(strategy = GenerationType.UUID)
   @Column(name = "product_id", nullable = false)
   private UUID productId;
 
@@ -49,6 +51,16 @@ public class HubStock extends BaseAudit {
   Integer quantity;
 
   @Version Long version;
+
+  @Override
+  public UUID getId() {
+    return this.productId;
+  }
+
+  @Override
+  public boolean isNew() {
+    return this.getCreatedAt() == null;
+  }
 
   @Builder(access = AccessLevel.PRIVATE)
   private HubStock(
@@ -155,6 +167,14 @@ public class HubStock extends BaseAudit {
   }
 
   /*
+   * Vendor Server 에서 상품 정보 업데이트 시 처리 할 도메인 로직
+   * Stock History는 기록을 목적으로하기때문에, 변경 사항 미전파
+   */
+  public void updateStockInfo(String productCode, String productName) {
+    this.productInfo = ProductInfo.of(productCode, productName);
+  }
+
+  /*
    * 재고 삭제 시 검증
    * 1. 재고 수량, 타입 검증(재고가 남아있으면 삭제 불가)
    * 2. 재고 삭제 권한 검증
@@ -188,24 +208,27 @@ public class HubStock extends BaseAudit {
     }
   }
 
+  /*
+   * MASTER - 가능
+   * HUB - 자신의 담당 허브만 가능
+   */
   private static void checkCreatePermission(
       UUID requesterId, UUID hubId, PermissionChecker permissionChecker) {
-    final Set<UserRole> permission = Set.of(UserRole.MASTER, UserRole.HUB);
-    if (!permissionChecker.hasCreatePermission(requesterId, hubId)) {
+    if (!permissionChecker.hasCreatePermission(requesterId, hubId, PERMISSION_ROLE)) {
       throw new NoPermissionException(StockErrorCode.STOCK_REGISTER_FORBIDDEN);
     }
   }
 
   private void checkUpdatePermission(
       UUID requesterId, UUID hubId, PermissionChecker permissionChecker) {
-    if (!permissionChecker.hasUpdatePermission(requesterId, hubId)) {
+    if (!permissionChecker.hasUpdatePermission(requesterId, hubId, PERMISSION_ROLE)) {
       throw new NoPermissionException(StockErrorCode.STOCK_UPDATE_FORBIDDEN);
     }
   }
 
   private void checkDeletePermission(
       UUID requesterId, UUID hubId, PermissionChecker permissionChecker) {
-    if (!permissionChecker.hasDeletePermission(requesterId, hubId)) {
+    if (!permissionChecker.hasDeletePermission(requesterId, hubId, PERMISSION_ROLE)) {
       throw new NoPermissionException(StockErrorCode.STOCK_DELETED_FORBIDDEN);
     }
   }

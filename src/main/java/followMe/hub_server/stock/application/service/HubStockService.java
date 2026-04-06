@@ -28,8 +28,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
-@Service
 @Transactional
+@Service
 @RequiredArgsConstructor
 public class HubStockService {
   private final HubStockRepository hubStockRepository;
@@ -108,6 +108,10 @@ public class HubStockService {
       throw new NotFoundProductException();
     }
 
+    log.info(
+        "orderId: {},  quantity: {}",
+        request.getProducts().getFirst().getId(),
+        request.getProducts().getFirst().getQuantity());
     for (HubStock stock : stocks) {
       UUID p = stock.getProductId();
       Integer requestQuantity = requestMap.get(p);
@@ -142,6 +146,16 @@ public class HubStockService {
     }
 
     return OrderHubStockResponse.from(orderId, Instant.now());
+  }
+
+  /*
+   * Vendor Server Event 요청
+   * 상품 정보 수정으로 인한 재고 이름, 코드 수정
+   */
+  public void updateStockInfo(UUID productId, String code, String name) {
+    HubStock stock =
+        hubStockRepository.findById(productId).orElseThrow(NotFoundProductException::new);
+    stock.updateStockInfo(code, name);
   }
 
   /*
