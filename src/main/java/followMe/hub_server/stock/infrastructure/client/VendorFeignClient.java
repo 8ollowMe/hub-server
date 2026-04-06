@@ -52,7 +52,7 @@ public interface VendorFeignClient {
    * 요청을 차단하고,
    * '업체 서비스 상태가 불안하여, 요청이 일시 차단 되었습니다.' 안내 메시지 출력
    */
-  default VendorProductInfo handleCircuitOpen(CallNotPermittedException e) {
+  default VendorProductInfo handleCircuitOpen(UUID userId, CallNotPermittedException e) {
     throw new VendorClientUnavailableException(StockErrorCode.VENDOR_CLIENT_CIRCUIT_BREAKER);
   }
 }

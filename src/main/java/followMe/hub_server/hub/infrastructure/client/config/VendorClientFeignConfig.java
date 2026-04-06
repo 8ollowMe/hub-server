@@ -24,9 +24,8 @@ public class VendorClientFeignConfig {
       }
 
       HttpServletRequest request = attributes.getRequest();
-      copyHeader(request, requestTemplate, "Authorization");
       copyHeader(request, requestTemplate, "X-User-Id");
-      copyHeader(request, requestTemplate, "X-User-Role");
+      copyHeader(request, requestTemplate, "X-Role");
       copyHeader(request, requestTemplate, "X-Hub-Id");
       copyHeader(request, requestTemplate, "X-Vendor-Id");
     };
