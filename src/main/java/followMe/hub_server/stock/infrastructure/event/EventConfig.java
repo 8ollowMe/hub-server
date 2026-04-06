@@ -10,7 +10,6 @@ import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.security.task.DelegatingSecurityContextAsyncTaskExecutor;
 
 // TODO: retry 설정 추가해야 됨
 @Configuration
@@ -33,6 +32,8 @@ public class EventConfig implements AsyncConfigurer {
     executor.setQueueCapacity(100);
     executor.setThreadNamePrefix("AsyncEvent-");
     executor.initialize();
-    return new DelegatingSecurityContextAsyncTaskExecutor(executor);
+
+    executor.initialize();
+    return executor;
   }
 }
