@@ -53,7 +53,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-cache'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
-    implementation "com.followMe:common-lib:1.0.2"
+    implementation "com.followMe:common-lib:1.0.7"
 }
 
 dependencyManagement {
