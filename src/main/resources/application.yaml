@@ -12,19 +12,18 @@ spring:
       circuitbreaker:
         enabled: true
 
-  kafka:
-    bootstrap-servers: localhost:9092,localhost:9094,localhost:9096
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-      properties:
-        spring.json.add.type.headers: true
-    consumer:
-      group-id: hub-stock-group
-      auto-offset-reset: earliest
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-
+    kafka1:
+      bootstrap-servers: localhost:9092,localhost:9094,localhost:9096
+      producer:
+        key-serializer: org.apache.kafka.common.serialization.StringSerializer
+        value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+        properties:
+          spring.json.add.type.headers: true
+      consumer:
+        group-id: hub-stock-group
+        auto-offset-reset: earliest
+        key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+        value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
 
   datasource:
     url: jdbc:postgresql://localhost:5433/hub_db
@@ -66,12 +65,12 @@ resilience4j:
         waitDuration: 1s
         retryExceptions:
           - followMe.hub_server.stock.domain.exception.detail.VendorClientUnavailableException
+          - followMe.hub_server.stock.domain.exception.detail.UserClientUnavailableException
 
     instances:
       vendor-server:
         baseConfig: default
-
-      payment-server:
+      user-server:
         baseConfig: default
 
 
@@ -81,16 +80,18 @@ resilience4j:
       default:
         registerHealthIndicator: true
         slidingWindowType: COUNT_BASED
-        slidingWindowSize: 3 # 5개 요청 기반
+        slidingWindowSize: 5 # 5개 요청 기반
         minimumNumberOfCalls: 3 #3개 임시
         failureRateThreshold: 50 # 50% 실패 시 Open
         waitDurationInOpenState: 10s # Open 후 Half-Open까지 대기 시간
+        ignore-exceptions:
+          - feign.FeignException.NotFound
+          - feign.FeignException.BadRequest
 
     instances:
       vendor-server:
         baseConfig: default
-
-      order-server:
+      user-server:
         baseConfig: default
 
 
