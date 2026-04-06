@@ -1,6 +1,7 @@
 package followMe.hub_server.stock.application.dto;
 
 import followMe.hub_server.stock.domain.HubStock;
+import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,5 +28,19 @@ public class SearchResponse {
                 .hubId(stock.getHubId())
                 .quantity(stock.getQuantity())
                 .build());
+  }
+
+  public static List<SearchResponse> listFrom(List<HubStock> hubStocks) {
+    return hubStocks.stream()
+        .map(
+            stock ->
+                SearchResponse.builder()
+                    .productId(stock.getProductId())
+                    .productCode(stock.getProductInfo().getProductCode())
+                    .productName(stock.getProductInfo().getProductName())
+                    .hubId(stock.getHubId())
+                    .quantity(stock.getQuantity())
+                    .build())
+        .toList();
   }
 }

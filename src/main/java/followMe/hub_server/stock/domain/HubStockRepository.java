@@ -24,6 +24,4 @@ public interface HubStockRepository {
   Page<HubStock> findAllByVendor_Id(UUID vendorId, Pageable pageable);
 
   Page<HubStock> findAll(Pageable pageable);
-
-  Page<HubStock> findAllByProductIdIn(Collection<UUID> productIds, Pageable pageable);
 }

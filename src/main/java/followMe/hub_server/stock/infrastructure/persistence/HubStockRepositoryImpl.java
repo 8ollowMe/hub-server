@@ -54,9 +54,4 @@ public class HubStockRepositoryImpl implements HubStockRepository {
   public Page<HubStock> findAll(Pageable pageable) {
     return jpaRepository.findAll(pageable);
   }
-
-  @Override
-  public Page<HubStock> findAllByProductIdIn(Collection<UUID> productIds, Pageable pageable) {
-    return jpaRepository.findAllByProductIdIn(productIds, pageable);
-  }
 }

@@ -5,6 +5,7 @@ import followMe.hub_server.stock.application.dto.SearchProductIdsRequest;
 import followMe.hub_server.stock.application.dto.SearchResponse;
 import followMe.hub_server.stock.domain.HubStock;
 import followMe.hub_server.stock.domain.HubStockRepository;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -38,14 +39,14 @@ public class QueryHubStockService {
         hubStockRepository.findAllByProductId(condition.getProductId(), pageable));
   }
 
-  public Page<SearchResponse> searchHubStock(SearchProductIdsRequest request, Pageable pageable) {
+  public List<SearchResponse> searchHubStock(SearchProductIdsRequest request) {
 
     Set<UUID> ids =
         request.getProducts().stream()
             .map(SearchProductIdsRequest.RequestProduct::getId)
             .collect(Collectors.toSet());
-    Page<HubStock> stocks = hubStockRepository.findAllByProductIdIn(ids, pageable);
+    List<HubStock> stocks = hubStockRepository.findAllByProductIdIn(ids).stream().toList();
 
-    return SearchResponse.from(stocks);
+    return SearchResponse.listFrom(stocks);
   }
 }

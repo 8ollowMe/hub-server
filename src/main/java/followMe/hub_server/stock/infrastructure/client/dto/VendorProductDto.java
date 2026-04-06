@@ -1,5 +1,6 @@
 package followMe.hub_server.stock.infrastructure.client.dto;
 
+import java.util.Objects;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,6 +21,17 @@ public class VendorProductDto {
     String code;
     String description;
     ProductStatus status;
+
+    public boolean equals(UUID productId, UUID hubId, UUID vendorId) {
+      return Objects.equals(productId, this.productId)
+          && Objects.equals(hubId, this.hubId)
+          && Objects.equals(vendorId, this.vendorId);
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(productId, hubId, vendorId);
+    }
   }
 
   public enum ProductStatus {
