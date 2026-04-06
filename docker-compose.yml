@@ -13,6 +13,12 @@ services:
       - "5433:5432"
     volumes:
       - hub_postgres_data:/var/lib/postgresql/data
+  redis:
+    image: redis:7
+    container_name: hub-redis
+    restart: always
+    ports:
+      - "6379:6379"
 
 volumes:
   hub_postgres_data:

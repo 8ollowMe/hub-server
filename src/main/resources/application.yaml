@@ -2,7 +2,7 @@ spring:
   application:
     name: hub-server
   config:
-    import: 'optional:configserver: '
+    import: 'optional:configserver:'
   cloud:
     config:
       discovery:
@@ -34,11 +34,17 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     properties:
       hibernate:
         format_sql: true
     show-sql: true
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      timeout: 3s
 
 eureka:
   instance:

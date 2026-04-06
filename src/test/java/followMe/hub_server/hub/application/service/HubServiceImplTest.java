@@ -48,7 +48,7 @@ class HubServiceImplTest {
     void createHub_master_success() {
       // given
       UUID userId = UUID.randomUUID();
-      UserContext userContext = new UserContext(userId, UserRole.MASTER, null, null);
+      UserContext userContext = new UserContext(userId, UserRole.MASTER, null, null, null);
 
       CreateHubCommand command =
           new CreateHubCommand(
@@ -82,7 +82,7 @@ class HubServiceImplTest {
       // given
       UUID userId = UUID.randomUUID();
       UserContext userContext =
-          new UserContext(userId, UserRole.HUB_MANAGER, UUID.randomUUID(), null);
+          new UserContext(userId, UserRole.HUB_MANAGER, UUID.randomUUID(), null, null);
 
       CreateHubCommand command =
           new CreateHubCommand(
@@ -182,7 +182,7 @@ class HubServiceImplTest {
       UUID userId = UUID.randomUUID();
       UUID hubId = UUID.randomUUID();
 
-      UserContext userContext = new UserContext(userId, UserRole.MASTER, null, null);
+      UserContext userContext = new UserContext(userId, UserRole.MASTER, null, null, null);
       UpdateHubCommand command =
           new UpdateHubCommand(
               hubId, "수정된 허브", "수정된 주소", new BigDecimal("35.1234"), new BigDecimal("128.1234"));
@@ -212,7 +212,7 @@ class HubServiceImplTest {
       UUID userId = UUID.randomUUID();
       UUID hubId = UUID.randomUUID();
 
-      UserContext userContext = new UserContext(userId, UserRole.HUB_MANAGER, hubId, null);
+      UserContext userContext = new UserContext(userId, UserRole.HUB_MANAGER, hubId, null, null);
       UpdateHubCommand command =
           new UpdateHubCommand(
               hubId, "수정된 허브", "수정된 주소", new BigDecimal("35.1234"), new BigDecimal("128.1234"));
@@ -243,7 +243,7 @@ class HubServiceImplTest {
       UUID myHubId = UUID.randomUUID();
       UUID targetHubId = UUID.randomUUID();
 
-      UserContext userContext = new UserContext(userId, UserRole.HUB_MANAGER, myHubId, null);
+      UserContext userContext = new UserContext(userId, UserRole.HUB_MANAGER, myHubId, null, null);
       UpdateHubCommand command =
           new UpdateHubCommand(
               targetHubId,
@@ -266,7 +266,8 @@ class HubServiceImplTest {
       UUID userId = UUID.randomUUID();
       UUID hubId = UUID.randomUUID();
 
-      UserContext userContext = new UserContext(userId, UserRole.DELIVERY_MANAGER, null, null);
+      UserContext userContext =
+          new UserContext(userId, UserRole.DELIVERY_MANAGER, null, null, null);
       UpdateHubCommand command =
           new UpdateHubCommand(
               hubId, "수정된 허브", "수정된 주소", new BigDecimal("35.1234"), new BigDecimal("128.1234"));
@@ -290,7 +291,7 @@ class HubServiceImplTest {
       UUID userId = UUID.randomUUID();
       UUID hubId = UUID.randomUUID();
 
-      UserContext userContext = new UserContext(userId, UserRole.MASTER, null, null);
+      UserContext userContext = new UserContext(userId, UserRole.MASTER, null, null, null);
       Hub hub = mock(Hub.class);
 
       when(hubRepository.findById(hubId)).thenReturn(Optional.of(hub));
@@ -312,7 +313,7 @@ class HubServiceImplTest {
       UUID userId = UUID.randomUUID();
       UUID hubId = UUID.randomUUID();
 
-      UserContext userContext = new UserContext(userId, UserRole.HUB_MANAGER, hubId, null);
+      UserContext userContext = new UserContext(userId, UserRole.HUB_MANAGER, hubId, null, null);
       Hub hub = mock(Hub.class);
 
       when(hubRepository.findById(hubId)).thenReturn(Optional.of(hub));
@@ -335,7 +336,7 @@ class HubServiceImplTest {
       UUID myHubId = UUID.randomUUID();
       UUID targetHubId = UUID.randomUUID();
 
-      UserContext userContext = new UserContext(userId, UserRole.HUB_MANAGER, myHubId, null);
+      UserContext userContext = new UserContext(userId, UserRole.HUB_MANAGER, myHubId, null, null);
 
       // when & then
       assertThatThrownBy(() -> hubService.deleteHub(userContext, targetHubId))
@@ -351,7 +352,8 @@ class HubServiceImplTest {
       UUID userId = UUID.randomUUID();
       UUID hubId = UUID.randomUUID();
 
-      UserContext userContext = new UserContext(userId, UserRole.DELIVERY_MANAGER, null, null);
+      UserContext userContext =
+          new UserContext(userId, UserRole.DELIVERY_MANAGER, null, null, null);
 
       // when & then
       assertThatThrownBy(() -> hubService.deleteHub(userContext, hubId))
