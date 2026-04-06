@@ -37,10 +37,10 @@ public class ProductEventHandler {
    *
    * 추후 재시도 정책 필요
    */
-  @KafkaListener(topics = PRODUCT_UPDATED_EVENT, groupId = "hub-stock-group10")
-  public void consume(String strEvent) throws Exception {
+  @KafkaListener(topics = PRODUCT_UPDATED_EVENT, groupId = "hub-stock-group")
+  public void consume(String jsonEvent) throws Exception {
     ProductUpdatedEvent event =
-        (ProductUpdatedEvent) eventMapped(strEvent, eventMap.get(PRODUCT_UPDATED_EVENT));
+        (ProductUpdatedEvent) eventMapped(jsonEvent, eventMap.get(PRODUCT_UPDATED_EVENT));
 
     UUID eventId = UUID.fromString(event.getEventId());
 
@@ -61,8 +61,7 @@ public class ProductEventHandler {
     inboxRepository.save(Inbox.builder().id(eventId).messageGroup(PRODUCT_UPDATED_EVENT).build());
   }
 
-  private <T> T eventMapped(String strEvent, Class<T> clazz) throws Exception {
-    String json = objectMapper.readValue(strEvent, String.class);
-    return objectMapper.readValue(json, clazz);
+  private <T> T eventMapped(String jsonEvent, Class<T> clazz) throws Exception {
+    return objectMapper.readValue(jsonEvent, clazz);
   }
 }

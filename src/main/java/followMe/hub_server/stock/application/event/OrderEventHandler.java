@@ -39,10 +39,10 @@ public class OrderEventHandler {
    *
    * 추후 재시도 정책 필요
    */
-  @KafkaListener(topics = ORDER_REQUESTED_EVENT, groupId = "hub-stock-group11")
-  public void orderRequestedHandle(String strEvent) throws Exception {
+  @KafkaListener(topics = ORDER_REQUESTED_EVENT, groupId = "hub-stock-group")
+  public void orderRequestedHandle(String jsonEvent) throws Exception {
     OrderRequestedEvent event =
-        (OrderRequestedEvent) eventMapped(strEvent, eventMap.get(ORDER_REQUESTED_EVENT));
+        (OrderRequestedEvent) eventMapped(jsonEvent, eventMap.get(ORDER_REQUESTED_EVENT));
     UUID eventId = UUID.fromString(event.getEventId());
 
     if (inboxRepository.existsByIdAndMessageGroup(eventId, ORDER_REQUESTED_EVENT)) {
@@ -69,10 +69,10 @@ public class OrderEventHandler {
    *
    * 추후 재시도 정책 필요
    */
-  @KafkaListener(topics = ORDER_CANCELLED_EVENT, groupId = "hub-stock-group11")
-  public void setOrderCancelledHandle(String strEvent) throws Exception {
+  @KafkaListener(topics = ORDER_CANCELLED_EVENT, groupId = "hub-stock-group")
+  public void setOrderCancelledHandle(String jsonEvent) throws Exception {
     OrderCancelledEvent event =
-        (OrderCancelledEvent) eventMapped(strEvent, eventMap.get(ORDER_CANCELLED_EVENT));
+        (OrderCancelledEvent) eventMapped(jsonEvent, eventMap.get(ORDER_CANCELLED_EVENT));
     UUID eventId = UUID.fromString(event.getEventId());
 
     if (inboxRepository.existsByIdAndMessageGroup(eventId, ORDER_CANCELLED_EVENT)) {
@@ -89,8 +89,7 @@ public class OrderEventHandler {
     inboxRepository.save(Inbox.builder().id(eventId).messageGroup(ORDER_CANCELLED_EVENT).build());
   }
 
-  private <T> T eventMapped(String strEvent, Class<T> clazz) throws Exception {
-    String json = objectMapper.readValue(strEvent, String.class);
-    return objectMapper.readValue(json, clazz);
+  private <T> T eventMapped(String jsonEvent, Class<T> clazz) throws Exception {
+    return objectMapper.readValue(jsonEvent, clazz);
   }
 }
