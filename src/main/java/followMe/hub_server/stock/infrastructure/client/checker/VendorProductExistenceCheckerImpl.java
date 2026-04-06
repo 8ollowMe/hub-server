@@ -1,5 +1,6 @@
 package followMe.hub_server.stock.infrastructure.client.checker;
 
+import followMe.hub_server.stock.domain.exception.detail.NotFoundProductException;
 import followMe.hub_server.stock.domain.service.VendorProductExistenceChecker;
 import followMe.hub_server.stock.infrastructure.client.VendorFeignClient;
 import followMe.hub_server.stock.infrastructure.client.dto.VendorProductDto.VendorProductInfo;
@@ -21,14 +22,9 @@ public class VendorProductExistenceCheckerImpl implements VendorProductExistence
 
     VendorProductInfo info = vendorFeignClient.getVendorProduct(productId);
 
-    if (Objects.isNull(info.getVendorId())
-        || Objects.isNull(info.getHubId())
-        || Objects.isNull(info.getProductId())) {
-      return false;
+    if (Objects.isNull(info)) {
+      throw new NotFoundProductException();
     }
-
-    return info.getVendorId().equals(vendorId)
-        && info.getHubId().equals(hubId)
-        && info.getProductId().equals(productId);
+    return info.equals(productId, hubId, vendorId);
   }
 }

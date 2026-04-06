@@ -34,6 +34,7 @@ public class HubStock extends BaseAudit implements Persistable<UUID> {
   private static final Set<Type> INCREASE_TYPES =
       Set.of(Type.INBOUND, Type.RETURN_IN, Type.ORDER_CANCELED);
   private static final Set<Type> DELETED_TYPES = Set.of(Type.DISCONTINUED);
+  private static final Set<UserRole> PERMISSION_ROLE = Set.of(UserRole.HUB, UserRole.MASTER);
 
   @Id
   @Column(name = "product_id", nullable = false)
@@ -207,24 +208,27 @@ public class HubStock extends BaseAudit implements Persistable<UUID> {
     }
   }
 
+  /*
+   * MASTER - 가능
+   * HUB - 자신의 담당 허브만 가능
+   */
   private static void checkCreatePermission(
       UUID requesterId, UUID hubId, PermissionChecker permissionChecker) {
-    final Set<UserRole> permission = Set.of(UserRole.MASTER, UserRole.HUB);
-    if (!permissionChecker.hasCreatePermission(requesterId, hubId)) {
+    if (!permissionChecker.hasCreatePermission(requesterId, hubId, PERMISSION_ROLE)) {
       throw new NoPermissionException(StockErrorCode.STOCK_REGISTER_FORBIDDEN);
     }
   }
 
   private void checkUpdatePermission(
       UUID requesterId, UUID hubId, PermissionChecker permissionChecker) {
-    if (!permissionChecker.hasUpdatePermission(requesterId, hubId)) {
+    if (!permissionChecker.hasUpdatePermission(requesterId, hubId, PERMISSION_ROLE)) {
       throw new NoPermissionException(StockErrorCode.STOCK_UPDATE_FORBIDDEN);
     }
   }
 
   private void checkDeletePermission(
       UUID requesterId, UUID hubId, PermissionChecker permissionChecker) {
-    if (!permissionChecker.hasDeletePermission(requesterId, hubId)) {
+    if (!permissionChecker.hasDeletePermission(requesterId, hubId, PERMISSION_ROLE)) {
       throw new NoPermissionException(StockErrorCode.STOCK_DELETED_FORBIDDEN);
     }
   }
