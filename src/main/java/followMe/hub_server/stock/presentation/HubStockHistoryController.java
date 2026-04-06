@@ -22,7 +22,7 @@ public class HubStockHistoryController {
   @ModelAttribute
   public UserContext userContext(
       @RequestHeader("X-User-Id") UUID userId,
-      @RequestHeader("X-User-Role") UserRole role,
+      @RequestHeader("X-Role") UserRole role,
       @RequestHeader(value = "X-Hub-Id", required = false) UUID hubId,
       @RequestHeader(value = "X-Vendor-Id", required = false) UUID vendorId,
       @RequestHeader(value = "X-User-Name", required = false) String userName) {
