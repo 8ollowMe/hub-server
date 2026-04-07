@@ -4,9 +4,8 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 public record UpdateHubRouteCommand(
-        UUID hubRouteId,
-        UUID originHubId,
-        UUID destinationHubId,
-        BigDecimal duration,
-        BigDecimal distance
-) {}
+    UUID hubRouteId,
+    UUID originHubId,
+    UUID destinationHubId,
+    BigDecimal duration,
+    BigDecimal distance) {}

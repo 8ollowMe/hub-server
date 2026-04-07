@@ -4,8 +4,4 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 public record CreateHubRouteCommand(
-        UUID originHubId,
-        UUID destinationHubId,
-        BigDecimal duration,
-        BigDecimal distance
-) {}
+    UUID originHubId, UUID destinationHubId, BigDecimal duration, BigDecimal distance) {}

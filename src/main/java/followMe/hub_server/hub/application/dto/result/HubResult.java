@@ -1,7 +1,6 @@
 package followMe.hub_server.hub.application.dto.result;
 
 import followMe.hub_server.hub.domain.entity.Hub;
-
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -15,7 +14,8 @@ public record HubResult(
     BigDecimal longitude,
     Instant createdAt,
     Instant updatedAt,
-    Instant deletedAt) implements Serializable {
+    Instant deletedAt)
+    implements Serializable {
   public static HubResult from(Hub hub) {
     return new HubResult(
         hub.getHubId(),

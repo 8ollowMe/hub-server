@@ -26,86 +26,96 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class HubRouteServiceImpl implements HubRouteService {
 
-    private final HubRepository hubRepository;
-    private final HubRouteRepository hubRouteRepository;
+  private final HubRepository hubRepository;
+  private final HubRouteRepository hubRouteRepository;
   private final VendorClient vendorClient;
   private final HubRoutePathQueryService hubRoutePathQueryService;
 
-    @Override
-    @Transactional
-    @CacheEvict(value = {"hubRoute", "hubRouteSearch", "hubRoutePath"}, allEntries = true)
-    public HubRouteDetailResult create(UserContext userContext, CreateHubRouteCommand command) {
-        validateAuth(userContext);
+  @Override
+  @Transactional
+  @CacheEvict(
+      value = {"hubRoute", "hubRouteSearch", "hubRoutePath"},
+      allEntries = true)
+  public HubRouteDetailResult create(UserContext userContext, CreateHubRouteCommand command) {
+    validateAuth(userContext);
 
-        Hub originHub = hubRepository.findById(command.originHubId()).orElseThrow(HubNotFoundException::new);
-        Hub destinationHub =
-                hubRepository.findById(command.destinationHubId()).orElseThrow(HubNotFoundException::new);
+    Hub originHub =
+        hubRepository.findById(command.originHubId()).orElseThrow(HubNotFoundException::new);
+    Hub destinationHub =
+        hubRepository.findById(command.destinationHubId()).orElseThrow(HubNotFoundException::new);
 
-        if (hubRouteRepository.existsByOriginHubAndDestinationHub(originHub, destinationHub)) {
-            throw new HubRouteAlreadyExistsException();
-        }
-
-        HubRoute hubRoute =
-                HubRoute.builder()
-                        .originHub(originHub)
-                        .destinationHub(destinationHub)
-                        .duration(command.duration())
-                        .distance(command.distance())
-                        .build();
-
-        return HubRouteDetailResult.from(hubRouteRepository.save(hubRoute));
+    if (hubRouteRepository.existsByOriginHubAndDestinationHub(originHub, destinationHub)) {
+      throw new HubRouteAlreadyExistsException();
     }
 
-    @Override
-    @Cacheable(value = "hubRoute", key = "#hubRouteId")
-    public HubRouteDetailResult get(UUID hubRouteId) {
-        return HubRouteDetailResult.from(
-                hubRouteRepository.findByHubRouteId(hubRouteId).orElseThrow(HubRouteNotFoundException::new));
-    }
+    HubRoute hubRoute =
+        HubRoute.builder()
+            .originHub(originHub)
+            .destinationHub(destinationHub)
+            .duration(command.duration())
+            .distance(command.distance())
+            .build();
 
-    @Override
-    @Cacheable(
-            value = "hubRouteSearch",
-            key = "#query.originHubId() + ':' + #query.destinationHubId() + ':' + #query.pageRequest().page + ':' + #query.pageRequest().size")
-    public HubRoutePageResult search(SearchHubRoutesQuery query) {
-        return HubRoutePageResult.from(
-                hubRouteRepository.search(
-                        query.originHubId(),
-                        query.destinationHubId(),
-                        query.pageRequest().toPageable()));
-    }
+    return HubRouteDetailResult.from(hubRouteRepository.save(hubRoute));
+  }
 
-    @Override
-    @Transactional
-    @CacheEvict(value = {"hubRoute", "hubRouteSearch", "hubRoutePath"}, allEntries = true)
-    public HubRouteDetailResult update(UserContext userContext, UpdateHubRouteCommand command) {
-        validateAuth(userContext);
+  @Override
+  @Cacheable(value = "hubRoute", key = "#hubRouteId")
+  public HubRouteDetailResult get(UUID hubRouteId) {
+    return HubRouteDetailResult.from(
+        hubRouteRepository
+            .findByHubRouteId(hubRouteId)
+            .orElseThrow(HubRouteNotFoundException::new));
+  }
 
-        HubRoute hubRoute =
-                hubRouteRepository.findByHubRouteId(command.hubRouteId()).orElseThrow(HubRouteNotFoundException::new);
+  @Override
+  @Cacheable(
+      value = "hubRouteSearch",
+      key =
+          "#query.originHubId() + ':' + #query.destinationHubId() + ':' + #query.pageRequest().page + ':' + #query.pageRequest().size")
+  public HubRoutePageResult search(SearchHubRoutesQuery query) {
+    return HubRoutePageResult.from(
+        hubRouteRepository.search(
+            query.originHubId(), query.destinationHubId(), query.pageRequest().toPageable()));
+  }
 
-        Hub originHub = hubRepository.findById(command.originHubId()).orElseThrow(HubNotFoundException::new);
-        Hub destinationHub =
-                hubRepository.findById(command.destinationHubId()).orElseThrow(HubNotFoundException::new);
+  @Override
+  @Transactional
+  @CacheEvict(
+      value = {"hubRoute", "hubRouteSearch", "hubRoutePath"},
+      allEntries = true)
+  public HubRouteDetailResult update(UserContext userContext, UpdateHubRouteCommand command) {
+    validateAuth(userContext);
 
-        hubRoute.update(originHub, destinationHub, command.duration(), command.distance());
-        return HubRouteDetailResult.from(hubRoute);
-    }
+    HubRoute hubRoute =
+        hubRouteRepository
+            .findByHubRouteId(command.hubRouteId())
+            .orElseThrow(HubRouteNotFoundException::new);
 
-    @Override
-    @Transactional
-    @CacheEvict(value = {"hubRoute", "hubRouteSearch", "hubRoutePath"}, allEntries = true)
-    public HubRouteDetailResult delete(UserContext userContext, UUID hubRouteId) {
-        validateAuth(userContext);
+    Hub originHub =
+        hubRepository.findById(command.originHubId()).orElseThrow(HubNotFoundException::new);
+    Hub destinationHub =
+        hubRepository.findById(command.destinationHubId()).orElseThrow(HubNotFoundException::new);
 
-        HubRoute hubRoute =
-                hubRouteRepository.findByHubRouteId(hubRouteId).orElseThrow(HubRouteNotFoundException::new);
-        hubRoute.softDeleteRoute(userContext.userId());
-        return HubRouteDetailResult.from(hubRoute);
-    }
+    hubRoute.update(originHub, destinationHub, command.duration(), command.distance());
+    return HubRouteDetailResult.from(hubRoute);
+  }
 
+  @Override
+  @Transactional
+  @CacheEvict(
+      value = {"hubRoute", "hubRouteSearch", "hubRoutePath"},
+      allEntries = true)
+  public HubRouteDetailResult delete(UserContext userContext, UUID hubRouteId) {
+    validateAuth(userContext);
 
-    @Override
+    HubRoute hubRoute =
+        hubRouteRepository.findByHubRouteId(hubRouteId).orElseThrow(HubRouteNotFoundException::new);
+    hubRoute.softDeleteRoute(userContext.userId());
+    return HubRouteDetailResult.from(hubRoute);
+  }
+
+  @Override
   public HubRouteResult getRoute(UUID sourceHubId, UUID vendorId) {
     VendorResponse vendorResponse = vendorClient.getVendor(vendorId);
 
@@ -129,6 +139,5 @@ public class HubRouteServiceImpl implements HubRouteService {
     return new HubRouteResult(nodes);
   }
 
-    private void validateAuth(UserContext userContext) {
-    }
+  private void validateAuth(UserContext userContext) {}
 }

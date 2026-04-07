@@ -50,8 +50,7 @@ public class HubRoute extends BaseAudit {
     this.distance = distance;
   }
 
-  public void update(
-      Hub originHub, Hub destinationHub, BigDecimal duration, BigDecimal distance) {
+  public void update(Hub originHub, Hub destinationHub, BigDecimal duration, BigDecimal distance) {
     validate(originHub, destinationHub, duration, distance);
 
     this.originHub = originHub;
@@ -61,8 +60,7 @@ public class HubRoute extends BaseAudit {
   }
 
   public void softDeleteRoute(UUID deletedBy) {
-    if (this.isDeleted())
-        throw new HubRouteAlreadyInactiveException();
+    if (this.isDeleted()) throw new HubRouteAlreadyInactiveException();
     super.softDelete(deletedBy);
   }
 
