@@ -134,7 +134,12 @@ public class HubRouteServiceImpl implements HubRouteService {
 
     nodes.add(
         new RouteNodeResult(
-            vendorResponse.vendorId(), NodeType.VENDOR, vendorResponse.name(), null, null, nodes.size() + 1));
+            vendorResponse.vendorId(),
+            NodeType.VENDOR,
+            vendorResponse.name(),
+            null,
+            null,
+            nodes.size() + 1));
 
     return new HubRouteResult(nodes);
   }

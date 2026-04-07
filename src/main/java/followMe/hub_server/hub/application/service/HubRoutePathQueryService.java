@@ -49,13 +49,24 @@ public class HubRoutePathQueryService {
     List<RouteNodeResult> hubNodes = new ArrayList<>();
     for (int i = 0; i < hubs.size(); i++) {
       Hub hub = hubs.get(i);
-        if (i < hubs.size() - 1) {
-            Hub nextHub = hubs.get(i + 1);
-            HubRoute route = hubRouteRepository.findByOriginHubAndDestinationHub(hub, nextHub).orElseThrow(HubRouteNotFoundException::new);
-            hubNodes.add(new RouteNodeResult(hub.getHubId(), NodeType.HUB, hub.getHubName(), route.getDuration(), route.getDistance(), i + 1));
-        } else {
-            hubNodes.add(new RouteNodeResult(hub.getHubId(), NodeType.HUB, hub.getHubName(), null, null, i + 1));
-        }
+      if (i < hubs.size() - 1) {
+        Hub nextHub = hubs.get(i + 1);
+        HubRoute route =
+            hubRouteRepository
+                .findByOriginHubAndDestinationHub(hub, nextHub)
+                .orElseThrow(HubRouteNotFoundException::new);
+        hubNodes.add(
+            new RouteNodeResult(
+                hub.getHubId(),
+                NodeType.HUB,
+                hub.getHubName(),
+                route.getDuration(),
+                route.getDistance(),
+                i + 1));
+      } else {
+        hubNodes.add(
+            new RouteNodeResult(hub.getHubId(), NodeType.HUB, hub.getHubName(), null, null, i + 1));
+      }
     }
 
     return new HubPathResult(hubNodes);
