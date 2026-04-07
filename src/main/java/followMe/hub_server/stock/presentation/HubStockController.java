@@ -19,6 +19,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -61,10 +62,14 @@ public class HubStockController {
               + "<br>상품 식별자, 허브 식별자, 업체 식별자 별로 검색 조회를 제공합니다.")
   @GetMapping
   public ResponseEntity<ApiResponse> getHubStocks(
-      SearchCondition condition, PageRequest pageRequest, @ModelAttribute UserContext authUser) {
+      SearchCondition condition,
+      PageRequest pageRequest,
+      Sort sort,
+      @ModelAttribute UserContext authUser) {
 
     Page<SearchResponse> response =
-        queryHubStockService.searchHubStock(condition, pageRequest.toPageable());
+        queryHubStockService.searchHubStock(
+            condition, pageRequest.toPageable(ifNotSortedReturnCreatedAtDesc(sort)));
     return ApiResponse.ok(PageResponse.of(response));
   }
 
@@ -98,5 +103,9 @@ public class HubStockController {
 
     hubStockService.delete(request, productId, authUser.userId());
     return ApiResponse.ok();
+  }
+
+  private Sort ifNotSortedReturnCreatedAtDesc(Sort sort) {
+    return sort.isSorted() ? sort : Sort.by(Sort.Direction.DESC, "createdAt");
   }
 }

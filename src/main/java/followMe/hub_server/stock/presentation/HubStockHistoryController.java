@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,10 +41,15 @@ public class HubStockHistoryController {
               + "<br>상품 식별자를 통해 해당 상품의 재고 변동 기록을 조회 합니다.")
   @GetMapping
   public ResponseEntity<ApiResponse> searchStockHistory(
-      UUID productId, PageRequest pageRequest, @ModelAttribute UserContext authUser) {
+      UUID productId, PageRequest pageRequest, @ModelAttribute UserContext authUser, Sort sort) {
 
     Page<SearchStockHistoryResponse> responses =
-        queryHubStockHistoryService.getStockHistory(productId, pageRequest.toPageable());
+        queryHubStockHistoryService.getStockHistory(
+            productId, pageRequest.toPageable(ifNotSortedReturnCreatedAtDesc(sort)));
     return ApiResponse.ok(PageResponse.of(responses));
+  }
+
+  private Sort ifNotSortedReturnCreatedAtDesc(Sort sort) {
+    return sort.isSorted() ? sort : Sort.by(Sort.Direction.DESC, "createdAt");
   }
 }
