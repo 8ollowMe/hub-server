@@ -137,6 +137,7 @@ public class HubRouteServiceImpl implements HubRouteService {
             vendorResponse.vendorId(),
             NodeType.VENDOR,
             vendorResponse.name(),
+            vendorResponse.address(),
             null,
             null,
             nodes.size() + 1));

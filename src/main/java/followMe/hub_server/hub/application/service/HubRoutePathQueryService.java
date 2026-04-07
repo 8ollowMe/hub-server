@@ -60,12 +60,20 @@ public class HubRoutePathQueryService {
                 hub.getHubId(),
                 NodeType.HUB,
                 hub.getHubName(),
+                hub.getAddress(),
                 route.getDuration(),
                 route.getDistance(),
                 i + 1));
       } else {
         hubNodes.add(
-            new RouteNodeResult(hub.getHubId(), NodeType.HUB, hub.getHubName(), null, null, i + 1));
+            new RouteNodeResult(
+                hub.getHubId(),
+                NodeType.HUB,
+                hub.getHubName(),
+                hub.getAddress(),
+                null,
+                null,
+                i + 1));
       }
     }
 

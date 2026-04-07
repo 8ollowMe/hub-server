@@ -6,5 +6,11 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 public record RouteNodeResult(
-    UUID id, NodeType type, String name, BigDecimal duration, BigDecimal distance, int sequence)
+    UUID id,
+    NodeType type,
+    String name,
+    String address,
+    BigDecimal duration,
+    BigDecimal distance,
+    int sequence)
     implements Serializable {}
