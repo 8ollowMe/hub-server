@@ -1,5 +1,6 @@
 package followMe.hub_server.hub.domain.entity;
 
+import com.followMe.common.entity.BaseAudit;
 import followMe.hub_server.hub.exception.detail.*;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
@@ -14,8 +15,8 @@ import org.hibernate.annotations.SQLRestriction;
 @Entity
 @Table(name = "p_hub_route")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SQLRestriction("is_active = true")
-public class HubRoute {
+@SQLRestriction("deleted_at IS NULL")
+public class HubRoute extends BaseAudit {
 
   private static final BigDecimal MIN_DURATION = BigDecimal.ZERO;
   private static final BigDecimal MIN_DISTANCE = BigDecimal.ZERO;
@@ -39,9 +40,6 @@ public class HubRoute {
   @Column(name = "distance", nullable = false, precision = 10, scale = 2)
   private BigDecimal distance;
 
-  @Column(name = "is_active", nullable = false)
-  private boolean isActive;
-
   @Builder
   public HubRoute(Hub originHub, Hub destinationHub, BigDecimal duration, BigDecimal distance) {
     validate(originHub, destinationHub, duration, distance);
@@ -50,11 +48,9 @@ public class HubRoute {
     this.destinationHub = destinationHub;
     this.duration = duration;
     this.distance = distance;
-    this.isActive = true;
   }
 
-  public void updateRouteInfo(
-      Hub originHub, Hub destinationHub, BigDecimal duration, BigDecimal distance) {
+  public void update(Hub originHub, Hub destinationHub, BigDecimal duration, BigDecimal distance) {
     validate(originHub, destinationHub, duration, distance);
 
     this.originHub = originHub;
@@ -63,12 +59,9 @@ public class HubRoute {
     this.distance = distance;
   }
 
-  public void activate() {
-    this.isActive = true;
-  }
-
-  public void deactivate() {
-    this.isActive = false;
+  public void softDeleteRoute(UUID deletedBy) {
+    if (this.isDeleted()) throw new HubRouteAlreadyInactiveException();
+    super.softDelete(deletedBy);
   }
 
   private void validate(
