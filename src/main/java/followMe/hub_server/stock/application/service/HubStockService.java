@@ -24,6 +24,9 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -93,6 +96,10 @@ public class HubStockService {
   /*
    * 주문으로 인한 재고 수정
    */
+  @Retryable(
+      retryFor = {ObjectOptimisticLockingFailureException.class},
+      maxAttempts = 5,
+      backoff = @Backoff(delay = 500))
   public OrderHubStockResponse order(OrderHubStockRequest request, UUID requesterId) {
     List<Product> products = request.getProducts();
     checkOrderDuplicateIds(products);
