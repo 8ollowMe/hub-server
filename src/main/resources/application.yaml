@@ -1,6 +1,7 @@
 server:
   port: 8087
 
+
 spring:
   application:
     name: hub-server
@@ -9,7 +10,7 @@ spring:
   cloud:
     config:
       discovery:
-        enabled: true
+        enabled: false
         service-id: config-server
     openfeign:
       circuitbreaker:
@@ -29,7 +30,7 @@ spring:
         value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
 
   datasource:
-    url: jdbc:postgresql://localhost:5433/hub_db
+    url: jdbc:postgresql://localhost:5432/hub_db
     username: postgres
     password: 1234
     driver-class-name: org.postgresql.Driver
