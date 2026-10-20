@@ -2,12 +2,12 @@ package followMe.hub_server.stock.infrastructure.messaging.outbox;
 
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
-@ConditionalOnProperty(name = "event.publish.mode", havingValue = "polling")
+@ConditionalOnExpression("'${event.publish.mode:}' == 'polling' or '${event.publish.mode:}' == 'hybrid'")
 @RequiredArgsConstructor
 public class StockOutboxStatusUpdater {
 

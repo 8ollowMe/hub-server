@@ -1,19 +1,21 @@
 package followMe.hub_server.stock.infrastructure.messaging.outbox;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-@ConditionalOnProperty(name = "event.publish.mode", havingValue = "polling")
+@ConditionalOnExpression(
+    "'${event.publish.mode:}' == 'polling' or '${event.publish.mode:}' == 'hybrid'")
 @RequiredArgsConstructor
 public class StockOutboxRelay {
 
@@ -23,6 +25,9 @@ public class StockOutboxRelay {
 
   @Value("${outbox.relay.send-timeout-ms:5000}")
   private long sendTimeoutMs;
+
+  @Value("${outbox.relay.min-age-ms:0}")
+  private long minAgeMs;
 
   // 테스트에서 "릴레이 프로세스가 죽은 상태"를 만들기 위한 스위치 (운영 기본값 true)
   private final AtomicBoolean schedulingEnabled = new AtomicBoolean(true);
@@ -40,7 +45,8 @@ public class StockOutboxRelay {
 
   public synchronized int relayOnce() {
     List<StockOutbox> batch =
-        repository.findTop50ByStatusOrderByCreatedAtAsc(StockOutbox.Status.PENDING);
+        repository.findTop50ByStatusAndCreatedAtBeforeOrderByCreatedAtAsc(
+            StockOutbox.Status.PENDING, Instant.now().minusMillis(minAgeMs));
     int sent = 0;
     for (StockOutbox o : batch) {
       try {
