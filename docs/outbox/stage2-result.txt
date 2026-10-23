@@ -1,0 +1,26 @@
+# Stage 2 (hybrid) 실행 결과 — 테스트 로그의 [STAGE] 줄만 추출
+# 원본: ./gradlew cleanTest test --tests '*Stage2HybridOutboxTest' (BUILD SUCCESSFUL)
+# 추출: grep -o '\[STAGE2\][^"]*' stage2.log
+
+[STAGE2][H6] 결과: 정상 경로 토픽 도착=1건, 상태=PUBLISHED
+[STAGE2][H4'] 결과: 유휴 5초 동안 폴링 쿼리=1회
+[STAGE2][H3] 재고 저장 후 커밋 전 예외 발생
+[STAGE2][H3] 결과: 재고=false, outbox=0건, 토픽=0건
+[STAGE2][H1] 브로커 pause → 재고 커밋
+[STAGE2][H1] 장애 중 상태=PENDING retryCount=1
+[STAGE2][H1] record partition=0 offset=2 timestamp=1791973060220 (커밋 시각 기준 +10ms)
+[STAGE2][H1] record partition=0 offset=3 timestamp=1791973065568 (커밋 시각 기준 +5358ms)
+[STAGE2][H1] 결과: 토픽 도착=2건, 고유 payload=1건 (Stage 0은 0건)
+[STAGE2][H4] #1 커밋→전송 지연=17ms
+[STAGE2][H4] #2 커밋→전송 지연=10ms
+[STAGE2][H4] #3 커밋→전송 지연=12ms
+[STAGE2][H4] #4 커밋→전송 지연=11ms
+[STAGE2][H4] #5 커밋→전송 지연=4ms
+[STAGE2][H4] 결과: 평균=10ms, 최대=17ms (릴레이 최소 대기 3000ms)
+[STAGE2][H2] 즉시 발행 중단 상태에서 커밋
+[STAGE2][H2] 중단 직후: DB 커밋됨, outbox=PENDING, 토픽 0건
+[STAGE2][H2] 릴레이 재기동 → 3초 경과한 PENDING 재전송
+[STAGE2][H2] 결과: 재시도 후 토픽 도착=1건
+[STAGE2][H5] 즉시 발행: 전송 성공, 상태 갱신 실패
+[STAGE2][H5] 릴레이 재시도: PENDING이라 다시 전송
+[STAGE2][H5] 결과: 같은 eventId=2fd28913-98d9-4b82-9366-9f4abb5c3796 가 토픽에 2건 → 소비 측 멱등성 필요

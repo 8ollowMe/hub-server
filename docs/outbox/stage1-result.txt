@@ -1,0 +1,24 @@
+# Stage 1 (polling) 실행 결과 — 테스트 로그의 [STAGE] 줄만 추출
+# 원본: ./gradlew cleanTest test --tests '*Stage1PollingOutboxTest' (BUILD SUCCESSFUL)
+# 추출: grep -o '\[STAGE1\]\[[^]]*\][^"]*' stage1.log
+
+[STAGE1][S4'] 결과: 유휴 5초 동안 폴링 쿼리=5회 (간격 1000ms)
+[STAGE1][S3] 재고 저장 후 커밋 전 예외 발생
+[STAGE1][S3] 결과: 재고=false, outbox=0건, 토픽=0건
+[STAGE1][S1] 브로커 pause → 재고 커밋
+[STAGE1][S1] 장애 중 outbox 상태=[PENDING]
+[STAGE1][S1] 브로커 재개 → 릴레이 재전송 대기
+[STAGE1][S1] 결과: 토픽 도착=1건 (Stage 0은 0건) retryCount=0
+[STAGE1][S4] #1 커밋→전송 지연=609ms
+[STAGE1][S4] #2 커밋→전송 지연=198ms
+[STAGE1][S4] #3 커밋→전송 지연=704ms
+[STAGE1][S4] #4 커밋→전송 지연=200ms
+[STAGE1][S4] #5 커밋→전송 지연=706ms
+[STAGE1][S4] 결과: 평균=483ms, 최대=706ms (폴링 간격 1000ms)
+[STAGE1][S2] 릴레이 정지 상태에서 커밋
+[STAGE1][S2] 크래시 직후: DB 커밋됨, outbox=PENDING, 토픽 0건
+[STAGE1][S2] 릴레이 재기동(relayOnce)
+[STAGE1][S2] 결과: 재기동 후 토픽 도착=1건
+[STAGE1][S5] 1차 relay: 전송 성공, 상태 갱신 실패
+[STAGE1][S5] 2차 relay: PENDING이라 다시 전송
+[STAGE1][S5] 결과: 같은 eventId=4d4277d1-cfcc-4f68-bc9d-42515c9cb9b0 가 토픽에 2건
