@@ -14,6 +14,8 @@ public interface HubStockRepository {
 
   boolean existsById(UUID productId);
 
+  HubStock saveAndFlush(HubStock hubStock);
+
   Collection<HubStock> findAllByProductIdIn(Collection<UUID> productIds);
 
   // Query DSL 도입시 분리

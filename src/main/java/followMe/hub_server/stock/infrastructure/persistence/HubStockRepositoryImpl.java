@@ -31,6 +31,11 @@ public class HubStockRepositoryImpl implements HubStockRepository {
   }
 
   @Override
+  public HubStock saveAndFlush(HubStock hubStock) {
+    return jpaRepository.saveAndFlush(hubStock);
+  }
+
+  @Override
   public Collection<HubStock> findAllByProductIdIn(Collection<UUID> productIds) {
     return jpaRepository.findAllByProductIdIn(productIds);
   }

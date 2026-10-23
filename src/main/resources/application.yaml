@@ -84,8 +84,8 @@ resilience4j:
       default:
         registerHealthIndicator: true
         slidingWindowType: COUNT_BASED
-        slidingWindowSize: 5 # 5개 요청 기반
-        minimumNumberOfCalls: 3 #3개 임시
+        slidingWindowSize: 10 # 10개 요청 기반
+        minimumNumberOfCalls: 5 #5개 임시
         failureRateThreshold: 50 # 50% 실패 시 Open
         waitDurationInOpenState: 10s # Open 후 Half-Open까지 대기 시간
         ignore-exceptions:
