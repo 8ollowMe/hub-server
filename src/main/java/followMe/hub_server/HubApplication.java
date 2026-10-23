@@ -15,7 +15,9 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableJpaAuditing
 @EnableJpaRepositories(basePackages = {"com.followMe", "followMe.hub_server"})
 @EntityScan(basePackages = {"com.followMe", "followMe.hub_server"})
-@SpringBootApplication(scanBasePackages = {"com.followMe", "followMe.hub_server"})
+@SpringBootApplication(
+    scanBasePackages = {"com.followMe", "followMe.hub_server"},
+    excludeName = "com.followMe.common.autoconfigure.CommonEventAutoConfiguration")
 public class HubApplication {
 
   public static void main(String[] args) {
