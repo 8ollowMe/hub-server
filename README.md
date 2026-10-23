@@ -9,6 +9,15 @@ FollowMe MSA의 허브 서버입니다. `hub`(허브 관리)와 `stock`(허브 �
 
 이 문서는 **stock 도메인**만 설명합니다. 담당 범위는 커밋 기준으로 정리했습니다.
 
+## 주요 성과
+
+같은 장애·부하 시나리오를 구조만 바꿔 재현하고, 수치와 근거를 문서로 남겼습니다.
+
+| 주제 | 문제 | 해결 | 결과 | 검증 문서 |
+|---|---|---|---|---|
+| 재고 변경 이벤트 유실 | 재고는 커밋됐는데 Kafka 장애로 이벤트가 토픽에 도착하지 않음 | Outbox 저장 + 커밋 직후 즉시 발행 + 실패분 폴링 재시도 | 장애 중 커밋한 이벤트 도착 0건 → 복구 후 전달, 커밋→전송 지연 평균 483ms → 약 11ms | [outbox-verification.md](docs/outbox-verification.md) |
+| 주문 재고 차감 누락 | 동시 주문의 낙관적 락 충돌이 실패로 끝남 | `@Retryable`(낙관적 락 예외만, 최대 5회, 500ms) | 누락 160/1,000건(16.0%) → 0건, 대신 요청 지연 P95 9.0ms → 517.1ms | [optimistic-lock-verification.md](docs/optimistic-lock-verification.md) |
+
 ## 기술 스택
 
 Java 21 · Spring Boot 3.5.13 · Spring Cloud 2025.0.1 · Spring Data JPA · PostgreSQL 15 · Kafka · OpenFeign +
@@ -35,7 +44,7 @@ src/main/java/followMe/hub_server/stock
 - **재고 변경 이력은 별도 트랜잭션으로 기록합니다.** 재고가 바뀌면 도메인 이벤트(`StockChangedEvent`, `StockOrderEvent`)가 발행되고,
   `StockHistoryEventHandler`가 `AFTER_COMMIT` + `@Async` + `REQUIRES_NEW`로 `p_hub_stock_history`에 저장합니다.
 - **주문에 따른 재고 차감은 낙관적 락 + 재시도로 처리합니다.** `HubStock`에 `@Version`을 두고, `HubStockService.order()`에 `@Retryable`(낙관적 락 충돌 시
-  최대 5회, 500ms 간격)을 적용했습니다.
+  최대 5회, 500ms 간격)을 적용했습니다. 재시도 전후의 누락률과 지연은 [docs/optimistic-lock-verification.md](docs/optimistic-lock-verification.md)에 있습니다.
 - **주문·상품 이벤트는 Inbox로 중복 처리를 막습니다.** `OrderRequestedEvent`, `OrderCancelledEvent`, `ProductUpdatedEvent`를 Kafka로 받으며,
   처리한 `eventId`를 Inbox에 기록해 같은 이벤트를 다시 처리하지 않습니다.
 - **재고 변경 이벤트는 Outbox 패턴으로 발행합니다.** 재고 변경과 같은 트랜잭션에서 `p_stock_outbox`에 저장하고, 커밋 직후 즉시 발행하며, 실패분은 폴링 릴레이가 재시도합니다. 토픽은
@@ -227,6 +236,8 @@ docker compose up -d
 
 Testcontainers(PostgreSQL 15, Kafka `confluentinc/cp-kafka:7.6.1`)를 사용하므로 Docker가 실행 중이어야 합니다.
 
+### Outbox (재고 변경 이벤트 발행)
+
 ```bash
 # Stage 0: 직접 발행 — 브로커 장애 중 커밋하면 이벤트가 유실되는지 확인
 ./gradlew cleanTest test --tests '*Stage0DirectLossTest'
@@ -240,6 +251,21 @@ Testcontainers(PostgreSQL 15, Kafka `confluentinc/cp-kafka:7.6.1`)를 사용하�
 
 시나리오, 측정 방법, 결과는 [docs/outbox-verification.md](docs/outbox-verification.md)를 참고하세요.
 
+### 낙관적 락 (주문 재고 차감)
+
+```bash
+# Stage 0: 재시도 없이 누락률 재현
+./gradlew cleanTest test --tests '*Stage0LossReproTest'
+
+# Stage 1: 재시도 적용 (어드바이저 순서, 충돌 강제, 기준 부하)
+./gradlew cleanTest test --tests '*Stage1RetryTest'
+
+# Stage 2: backoff 설정 비교
+./gradlew cleanTest test --tests '*Stage2BackoffTest'
+```
+
+반복 횟수는 환경변수 `LOCK_REPEAT`(기본 5)로 바꿀 수 있습니다. 시나리오, 측정 방법, 결과는 [docs/optimistic-lock-verification.md](docs/optimistic-lock-verification.md)를 참고하세요.
+
 ## 관련 PR (stock 도메인)
 
 | PR                                                    | 내용                                                              |
@@ -249,3 +275,5 @@ Testcontainers(PostgreSQL 15, Kafka `confluentinc/cp-kafka:7.6.1`)를 사용하�
 | [#24](https://github.com/8ollowMe/hub-server/pull/24) | Feign 호출 헤더 수정                                                  |
 | [#29](https://github.com/8ollowMe/hub-server/pull/29) | Swagger API 명세, 기본 정렬, fallbackFactory, Zipkin 설정, 주문 재고 차감 재시도 |
 | [#32](https://github.com/8ollowMe/hub-server/pull/32) | Outbox 패턴 + Stage 0/1/2 재현 테스트                                  |
+| [#34](https://github.com/8ollowMe/hub-server/pull/34) | stock 도메인 README, Outbox 검증 문서 |
+| [#36](https://github.com/8ollowMe/hub-server/pull/36) | 낙관적 락 누락 재현·재시도 적용·backoff 비교 테스트, `@EnableRetry`, 서킷브레이커 판단 기준(10회·5회) 설정 |
